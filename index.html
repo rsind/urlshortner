@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom URL Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .input-group, .output-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #outputUrl {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Custom URL Tool</h1>
+        <div class="input-group">
+            <input type="text" id="inputUrl" placeholder="Enter your URL here">
+            <button onclick="convertUrl()">Convert</button>
+        </div>
+        <div class="output-group">
+            <input type="text" id="outputUrl" readonly>
+            <button onclick="copyUrl()">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        async function convertUrl() {
+            const inputUrl = document.getElementById('inputUrl').value.trim();
+            if (inputUrl) {
+                // Validate the URL
+                if (!isValidUrl(inputUrl)) {
+                    alert('Please enter a valid URL (e.g., https://example.com)');
+                    return;
+                }
+
+                // Generate a custom short URL (using a dummy API for demonstration)
+                try {
+                    const response = await fetch(`https://api.shrtco.de/v2/shorten?url=${encodeURIComponent(inputUrl)}`);
+                    const data = await response.json();
+                    if (data.ok) {
+                        const shortUrl = data.result.full_short_link;
+                        document.getElementById('outputUrl').value = shortUrl;
+                    } else {
+                        alert('Failed to shorten URL. Please try again.');
+                    }
+                } catch (error) {
+                    alert('An error occurred. Please check your internet connection.');
+                }
+            } else {
+                alert('Please enter a URL');
+            }
+        }
+
+        function isValidUrl(url) {
+            // Simple URL validation
+            try {
+                new URL(url);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function copyUrl() {
+            const outputUrl = document.getElementById('outputUrl');
+            if (outputUrl.value) {
+                try {
+                    await navigator.clipboard.writeText(outputUrl.value);
+                    alert('URL copied to clipboard!');
+                } catch (error) {
+                    alert('Failed to copy URL. Please try again.');
+                }
+            } else {
+                alert('No URL to copy.');
+            }
+        }
+    </script>
+</body>
+</html>
